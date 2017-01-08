@@ -52,7 +52,9 @@ export default class blazinglean extends Component {
     inject =
     `
     setTimeout(function(){
-        window.postMessage('Hello' + foo);
+        if (window.location.href.includes('/callback') && typeof verifier !== 'undefined') {
+            window.postMessage(verifier);
+        }
     }, 0);
     `
 
@@ -67,15 +69,13 @@ export default class blazinglean extends Component {
             );
         }
 
-        /* https://httpbin.org/redirect-to?url=http://localhost:3000/bt */
-
         return (
 
             <WebView
                 javaScriptEnabled
                 onMessage={this.onBridgeMessage}
                 injectedJavaScript={this.inject}
-                source={{ uri: 'http://localhost:3000/bt' }}
+                source={{ uri: this.state.auth_link }}
             />
         );
     }
