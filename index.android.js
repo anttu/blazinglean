@@ -45,10 +45,16 @@ export default class blazinglean extends Component {
         });
     }
 
-    webCallbackBridge() {
-        window.onload(console.log('onload complete'));
-        console.log('bridge executed');
+    onBridgeMessage(message) {
+        console.log('Received bridged message: ' + (message.nativeEvent.data));
     }
+
+    inject =
+    `
+    setTimeout(function(){
+        window.postMessage('Hello' + foo);
+    }, 0);
+    `
 
     render() {
         if (!this.state.auth_link) {
@@ -61,13 +67,15 @@ export default class blazinglean extends Component {
             );
         }
 
+        /* https://httpbin.org/redirect-to?url=http://localhost:3000/bt */
+
         return (
+
             <WebView
-                source={{
-                    uri: this.state.auth_link,
-                    injectedJavaScript: this.webCallbackBridge,
-                }}
-                style={{ marginTop: 20 }}
+                javaScriptEnabled
+                onMessage={this.onBridgeMessage}
+                injectedJavaScript={this.inject}
+                source={{ uri: 'http://localhost:3000/bt' }}
             />
         );
     }
