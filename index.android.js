@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import { WebView } from 'react-native';
 import {
   AppRegistry,
   StyleSheet,
@@ -9,6 +8,9 @@ import {
 } from 'react-native';
 
 import axios from 'axios';
+import DeviceStorage from 'react-native-simple-store';
+
+const USER_PROFILE_TABLE_NAME = 'PROFILE';
 
 export default class blazinglean extends Component {
 
@@ -37,6 +39,17 @@ export default class blazinglean extends Component {
         });
     }
 
+    handleCallback(profile) {
+        DeviceStorage.update(USER_PROFILE_TABLE_NAME, profile).then(() => {
+            console.log('User profile stored');
+        });
+    }
+
+    webCallbackBridge() {
+        window.onload(console.log('onload complete'));
+        console.log('bridge executed');
+    }
+
     render() {
         if (!this.state.auth_link) {
             return (
@@ -50,7 +63,10 @@ export default class blazinglean extends Component {
 
         return (
             <WebView
-                source={{ uri: this.state.auth_link }}
+                source={{
+                    uri: this.state.auth_link,
+                    injectedJavaScript: this.webCallbackBridge,
+                }}
                 style={{ marginTop: 20 }}
             />
         );
