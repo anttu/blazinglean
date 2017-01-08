@@ -25,7 +25,9 @@ export default class blazinglean extends Component {
         // Make a request for a user with a given ID
         axios.get('http://localhost:3000/authorizelink')
         .then((response) => {
-            console.log(response);
+            this.setState({
+                auth_link: response.data.url,
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -48,7 +50,7 @@ export default class blazinglean extends Component {
 
         return (
             <WebView
-                source={{ uri: 'https://github.com/facebook/react-native' }}
+                source={{ uri: this.state.auth_link }}
                 style={{ marginTop: 20 }}
             />
         );
