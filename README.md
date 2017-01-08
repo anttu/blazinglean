@@ -20,6 +20,7 @@ export PATH=${PATH}:~/Library/Android/sdk/tools:~/Library/Android/sdk/platform-t
 
 ```
 adb reverse tcp:8081 tcp:8081
+adb reverse tcp:3000 tcp:3000
 react-native start
 react-native run-android
 ```
@@ -27,3 +28,9 @@ react-native run-android
 Tail the logs:
 ```
 adb logcat *:S ReactNative:V ReactNativeJS:V
+```
+
+Open the debug console on Android:
+```
+ctrl+m
+```
