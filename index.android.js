@@ -9,6 +9,7 @@ import {
 
 import axios from 'axios';
 import DeviceStorage from 'react-native-simple-store';
+import WithinsService from './services/WithingsService.js';
 
 const USER_PROFILE_TABLE_NAME = 'PROFILE';
 
@@ -26,32 +27,25 @@ export default class blazinglean extends Component {
 
         this.getUserProfile().then((profile) => {
             if (profile) {
-                /* Get data */
                 this.state = {
                     profile: profile,
                 };
                 console.log(JSON.stringify(profile));
-
-                this.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
+                WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
             } else {
-                /* Get oauth token */
-                axios.get('http://localhost:3000/authorizelink')
-                .then((response) => {
-                    this.setState({
-                        auth_link: response.data.url,
-                        token: response.data.token,
-                        token_secret: response.data.token_secret,
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    this.setState({
-                        error: error.message,
-                    });
-                });
+                this.getAuthorizeLink();
             }
             console.log('User profile: ' + JSON.stringify(profile));
         });
+    }
+
+    async getAuthorizeLink() {
+        try {
+            this.setState(await WithinsService.getAuthorizeLink());
+        } catch (error) {
+            console.log(error);
+            this.setState({ error: error.message });
+        }
     }
 
     handleCallback(profile) {
@@ -65,59 +59,31 @@ export default class blazinglean extends Component {
         .then(profile => profile || false);
     }
 
-    getWeightMeasurements(token, secret, id) {
-        axios.get('http://localhost:3000/measurement', {
-            params: {
-                oauthtoken: token,
-                oauthsecret: secret,
-                userid: id,
-                mtype: 'weight',
-            },
-        })
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    }
-
-    onBridgeMessage(message) {
+    async onBridgeMessage(message) {
         console.log('Received bridged message: ' + message.nativeEvent.data);
         const user = JSON.parse(message.nativeEvent.data);
 
         const oauth_verifier = user.verifier;
-        const user_id = user.user_id;
+        const userID = user.user_id;
 
-        console.log("User ID:" + user_id);
+        console.log("User ID:" + userID);
         console.log("Verifier:" +oauth_verifier);
 
-        axios.get('http://localhost:3000/accesstoken', {
-            params: {
-                token: this.state.token,
-                tokensecret: this.state.token_secret,
-                oauthverifier: oauth_verifier,
-            },
-        })
-        .then((response) => {
-            const profile = {
-                user_id: user_id,
-                oauth_access_token: response.data.oauth_access_token,
-                oauth_access_token_secret: response.data.oauth_access_token_secret,
-            };
+        try {
+            const profile = await WithinsService.getAccessToken(this.state.token, this.state.token_secret, oauth_verifier);
+            profile.user_id = userID;
 
             DeviceStorage.update(USER_PROFILE_TABLE_NAME, profile).then(() => {
                 console.log('User profile stored');
             });
 
             this.setState(profile);
-        })
-        .catch((error) => {
+        } catch (error) {
             console.log(error);
             this.setState({
                 error: error.message,
             });
-        });
+        }
     }
 
     inject =
