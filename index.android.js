@@ -7,7 +7,6 @@ import {
   WebView,
 } from 'react-native';
 
-import axios from 'axios';
 import DeviceStorage from 'react-native-simple-store';
 import WithinsService from './services/WithingsService.js';
 
@@ -30,7 +29,6 @@ export default class blazinglean extends Component {
                 this.state = {
                     profile: profile,
                 };
-                console.log(JSON.stringify(profile));
                 WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
             } else {
                 this.getAuthorizeLink();
