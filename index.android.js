@@ -31,6 +31,8 @@ export default class blazinglean extends Component {
                     profile: profile,
                 };
                 console.log(JSON.stringify(profile));
+
+                this.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
             } else {
                 /* Get oauth token */
                 axios.get('http://localhost:3000/authorizelink')
@@ -61,6 +63,23 @@ export default class blazinglean extends Component {
     async getUserProfile() {
         return DeviceStorage.get(USER_PROFILE_TABLE_NAME)
         .then(profile => profile || false);
+    }
+
+    getWeightMeasurements(token, secret, id) {
+        axios.get('http://localhost:3000/measurement', {
+            params: {
+                oauthtoken: token,
+                oauthsecret: secret,
+                userid: id,
+                mtype: 'weight',
+            },
+        })
+        .then((response) => {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     }
 
     onBridgeMessage(message) {
