@@ -10,6 +10,8 @@ import {
 import DeviceStorage from 'react-native-simple-store';
 import WithinsService from './services/WithingsService.js';
 
+import LineChart from './src/components/LineChart.js';
+
 const USER_PROFILE_TABLE_NAME = 'PROFILE';
 
 export default class blazinglean extends Component {
@@ -94,6 +96,10 @@ export default class blazinglean extends Component {
     `
 
     render() {
+        return (
+            <LineChart />
+        );
+
         if (this.state.profile) {
             return (
                 <View />
