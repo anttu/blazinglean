@@ -5,20 +5,21 @@ import axios from 'axios';
 class WithinsService {
 
     getWeightMeasurements(token, secret, id) {
-        axios.get('http://localhost:3000/measurement', {
-            params: {
-                oauthtoken: token,
-                oauthsecret: secret,
-                userid: id,
-                mtype: 'weight',
-            },
-        })
-        .then((response) => {
-            console.log('Got measurements:');
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error);
+        return new Promise((resolve, reject) => {
+            axios.get('http://localhost:3000/measurement', {
+                params: {
+                    oauthtoken: token,
+                    oauthsecret: secret,
+                    userid: id,
+                    mtype: 'weight',
+                },
+            })
+            .then(response => (
+                resolve(response.data)
+            ))
+            .catch(error => (
+                reject(error)
+            ));
         });
     }
 

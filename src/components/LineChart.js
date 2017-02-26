@@ -2,47 +2,52 @@ import React from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
-  View
+  View,
 } from 'react-native';
-//import reactAddonsUpdate from 'immutability-helper';
+
 import reactAddonsUpdate from 'immutability-helper';
 
-import {LineChart} from 'react-native-mp-android-chart';
+import { LineChart } from 'react-native-mp-android-chart';
 
 class LineChartScreen extends React.Component {
 
-  constructor() {
-    super();
+    constructor(props) {
+        super();
 
-    this.state = {
-      data: {},
-      legend: {
-        enabled: true,
-        textColor: 'blue',
-        textSize: 12,
-        position: 'BELOW_CHART_RIGHT',
-        form: 'SQUARE',
-        formSize: 14,
-        xEntrySpace: 10,
-        yEntrySpace: 5,
-        formToTextSpace: 5,
-        wordWrapEnabled: true,
-        maxSizePercent: 0.5,
-        fontFamily: 'monospace',
-        fontStyle: 1,
-        custom: {
-          colors: ['red', 'blue', 'green'],
-          labels: ['Company X', 'Company Y', 'Company Dashed']
-        }
-      },
-      marker: {
-        enabled: true,
-        type: 'oval',
-        backgroundTint: 'teal'
-      }
-    };
-  }
+        /*
+        console.log("LineChart props:");
+        console.log(JSON.stringify(props.weightmeasurements));
+        console.log(JSON.stringify(props.dates));
+        */
+
+        this.state = {
+            data: {},
+            legend: {
+                enabled: true,
+                textColor: 'blue',
+                textSize: 12,
+                position: 'BELOW_CHART_RIGHT',
+                form: 'SQUARE',
+                formSize: 14,
+                xEntrySpace: 10,
+                yEntrySpace: 5,
+                formToTextSpace: 5,
+                wordWrapEnabled: true,
+                maxSizePercent: 0.5,
+                fontFamily: 'monospace',
+                fontStyle: 1,
+                custom: {
+                    colors: ['red', 'blue', 'green'],
+                    labels: ['Company X', 'Company Y', 'Company Dashed'],
+                },
+            },
+            marker: {
+                enabled: true,
+                type: 'oval',
+                backgroundTint: 'teal',
+            },
+        };
+    }
 
   componentDidMount() {
     this.setState(
@@ -50,8 +55,8 @@ class LineChartScreen extends React.Component {
         data: {
           $set: {
             datasets: [{
-              yValues: [100, 110, 105, 115],
-              label: 'Company X',
+              yValues: this.props.weightmeasurements,
+              label: 'Massa',
               config: {
                 lineWidth: 2,
                 drawCircles: false,
@@ -66,7 +71,8 @@ class LineChartScreen extends React.Component {
                   spaceLength: 20
                 }
               }
-            }, {
+          },/*
+             {
               yValues: [90, 130, 100, 105],
               label: 'Company Y',
               config: {
@@ -91,8 +97,9 @@ class LineChartScreen extends React.Component {
                 fillColor: 'green',
                 fillAlpha: 50
               }
-            }],
-            xValues: ['Q1', 'Q2', 'Q3', 'Q4']
+          }*/],
+            //xValues: ['Q1', 'Q2', 'Q3', 'Q4'],
+            xValues: this.props.dates,
           }
         }
       })

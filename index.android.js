@@ -20,18 +20,32 @@ export default class blazinglean extends Component {
         super(props);
 
         this.onBridgeMessage = this.onBridgeMessage.bind(this);
+        this.initialize = this.initialize.bind(this);
 
         this.state = {
             error: undefined,
             auth_link: undefined,
         };
 
-        this.getUserProfile().then((profile) => {
+        this.initialize();
+    }
+
+    async initialize() {
+        this.getStoredUserProfile().then(async(profile) => {
             if (profile) {
-                this.state = {
-                    profile: profile,
-                };
-                WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
+                this.setState(profile);
+                try {
+                    const measurements = await WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
+                    const dates = measurements.map(x => `${x.date}`);
+                    const weights = measurements.map(x => x.weight);
+                    this.setState({
+                        measurements: weights,
+                        dates: dates,
+                    });
+                } catch (error) {
+                    console.log('Failed to retrieve measurements');
+                    console.log(error);
+                }
             } else {
                 this.getAuthorizeLink();
             }
@@ -54,7 +68,7 @@ export default class blazinglean extends Component {
         });
     }
 
-    async getUserProfile() {
+    async getStoredUserProfile() {
         return DeviceStorage.get(USER_PROFILE_TABLE_NAME)
         .then(profile => profile || false);
     }
@@ -96,13 +110,19 @@ export default class blazinglean extends Component {
     `
 
     render() {
-        return (
-            <LineChart />
-        );
-
-        if (this.state.profile) {
+        if (this.state.measurements) {
             return (
-                <View />
+                <LineChart weightmeasurements={this.state.measurements} dates={this.state.dates} />
+            );
+        }
+
+        if (this.state.user_id) {
+            return (
+                <View>
+                    <Text>
+                        {this.state.error || 'Getting measurements from Withins...'}
+                    </Text>
+                </View>
             );
         }
 
