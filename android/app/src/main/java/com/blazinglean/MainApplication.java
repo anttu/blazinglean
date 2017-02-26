@@ -12,6 +12,9 @@ import com.facebook.soloader.SoLoader;
 
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 
+import com.github.reactNativeMPAndroidChart.MPAndroidChartPackage;
+
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +30,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new WebViewBridgePackage()
+          new WebViewBridgePackage(),
+          new MPAndroidChartPackage()
       );
     }
   };
