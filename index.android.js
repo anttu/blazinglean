@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 
 import DeviceStorage from 'react-native-simple-store';
+import DateFormat from 'dateformat';
+
 import WithinsService from './services/WithingsService.js';
 
 import LineChart from './src/components/LineChart.js';
@@ -36,8 +38,11 @@ export default class blazinglean extends Component {
                 this.setState(profile);
                 try {
                     const measurements = await WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
-                    const dates = measurements.map(x => `${x.date}`);
-                    const weights = measurements.map(x => x.weight);
+                    const dates = measurements.map((x) => {
+                        return DateFormat(new Date(x.date * 1000), 'dd.mm');
+                    }).reverse();
+                    console.log(JSON.stringify(dates));
+                    const weights = measurements.map(x => x.weight).reverse();
                     this.setState({
                         measurements: weights,
                         dates: dates,
