@@ -14,12 +14,6 @@ class LineChartScreen extends React.Component {
     constructor(props) {
         super();
 
-        /*
-        console.log("LineChart props:");
-        console.log(JSON.stringify(props.weightmeasurements));
-        console.log(JSON.stringify(props.dates));
-        */
-
         this.state = {
             data: {},
             legend: {
@@ -38,115 +32,88 @@ class LineChartScreen extends React.Component {
                 fontStyle: 1,
                 custom: {
                     colors: ['red', 'blue', 'green'],
-                    labels: ['Company X', 'Company Y', 'Company Dashed'],
+                    labels: ['Massa'],
                 },
             },
             marker: {
-                enabled: true,
+                enabled: false,
                 type: 'oval',
                 backgroundTint: 'teal',
             },
         };
     }
 
-  componentDidMount() {
-    this.setState(
-      reactAddonsUpdate(this.state, {
-        data: {
-          $set: {
-            datasets: [{
-              yValues: this.props.weightmeasurements,
-              label: 'Massa',
-              config: {
-                lineWidth: 2,
-                drawCircles: false,
-                drawCubic: true,
-                highlightColor: 'red',
-                color: 'red',
-                drawFilled: true,
-                fillColor: 'red',
-                fillAlpha: 60,
-                dashedLine: {
-                  lineLength: 20,
-                  spaceLength: 20
-                }
-              }
-          },/*
-             {
-              yValues: [90, 130, 100, 105],
-              label: 'Company Y',
-              config: {
-                lineWidth: 1,
-                drawCubic: true,
-                drawCubicIntensity: 0.4,
-                circleRadius: 5,
-                drawHighlightIndicators: false,
-                color: 'blue',
-                drawFilled: true,
-                fillColor: 'blue',
-                fillAlpha: 45,
-                circleColor: 'blue'
-              }
-            }, {
-              yValues: [110, 105, 115, 110],
-              label: 'Company Dashed',
-              config: {
-                color: 'green',
-                drawFilled: true,
-                drawCubic: true,
-                fillColor: 'green',
-                fillAlpha: 50
-              }
-          }*/],
-            //xValues: ['Q1', 'Q2', 'Q3', 'Q4'],
-            xValues: this.props.dates,
-          }
-        }
-      })
-    );
-  }
+    componentDidMount() {
+        this.setState(
+            reactAddonsUpdate(this.state, {
+                data: {
+                    $set: {
+                        datasets: [
+                            {
+                                yValues: this.props.weightmeasurements,
+                                label: 'Massa',
+                                config: {
+                                    lineWidth: 1,
+                                    drawCubic: true,
+                                    drawCubicIntensity: 0.4,
+                                    circleRadius: 0,
+                                    drawHighlightIndicators: false,
+                                    color: 'blue',
+                                    drawFilled: true,
+                                    fillColor: 'blue',
+                                    fillAlpha: 45,
+                                    circleColor: 'blue',
+                                },
+                            },
+                        ],
+                        xValues: this.props.dates,
+                    },
+                },
+            }),
+        );
+    }
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <LineChart
-          style={styles.chart}
-          data={this.state.data}
-          description={{text: ''}}
-          legend={this.state.legend}
-          marker={this.state.marker}
+    render() {
+        return (
+            <View style={styles.container}>
+                <LineChart
+                    style={styles.chart}
+                    data={this.state.data}
+                    description={{ text: '' } }
+                    legend={this.state.legend}
+                    marker={this.state.marker}
 
-          drawGridBackground={false}
-          borderColor={'teal'}
-          borderWidth={1}
-          drawBorders={true}
+                    drawGridBackground={false}
+                    borderColor={'teal'}
+                    borderWidth={1}
+                    drawBorders={true}
 
-          touchEnabled={true}
-          dragEnabled={true}
-          scaleEnabled={true}
-          scaleXEnabled={true}
-          scaleYEnabled={true}
-          pinchZoom={true}
-          doubleTapToZoomEnabled={true}
+                    touchEnabled={true}
+                    dragEnabled={true}
+                    scaleEnabled={true}
+                    scaleXEnabled={true}
+                    scaleYEnabled={true}
+                    pinchZoom={true}
+                    doubleTapToZoomEnabled={true}
 
-          dragDecelerationEnabled={true}
-          dragDecelerationFrictionCoef={0.99}
+                    dragDecelerationEnabled={true}
+                    dragDecelerationFrictionCoef={0.99}
 
-          keepPositionOnRotation={false}
-        />
-      </View>
-    );
-  }
+                    keepPositionOnRotation={false}
+                />
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF'
-  },
-  chart: {
-    flex: 1
-  }
+    container: {
+        flex: 1,
+        backgroundColor: '#F5FCFF',
+    },
+    chart: {
+        flex: 1,
+    },
 });
 
 AppRegistry.registerComponent('LineChartScreen', () => LineChartScreen);
