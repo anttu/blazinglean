@@ -9,9 +9,11 @@ import {
 
 import DeviceStorage from 'react-native-simple-store';
 import DateFormat from 'dateformat';
+import BusyIndicator from 'react-native-busy-indicator';
+import LoaderHandler from 'react-native-busy-indicator/LoaderHandler';
+
 
 import WithinsService from './services/WithingsService.js';
-
 import LineChart from './src/components/LineChart.js';
 
 const USER_PROFILE_TABLE_NAME = 'PROFILE';
@@ -23,6 +25,7 @@ export default class blazinglean extends Component {
 
         this.onBridgeMessage = this.onBridgeMessage.bind(this);
         this.initialize = this.initialize.bind(this);
+        this.getMeasurements = this.getMeasurements.bind(this);
 
         this.state = {
             error: undefined,
@@ -32,30 +35,40 @@ export default class blazinglean extends Component {
         this.initialize();
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!this.state.measurements) {
+            this.initialize();
+        }
+    }
+
     async initialize() {
         this.getStoredUserProfile().then(async(profile) => {
             if (profile) {
-                this.setState(profile);
-                try {
-                    const measurements = await WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
-                    const dates = measurements.map((x) => {
-                        return DateFormat(new Date(x.date * 1000), 'dd.mm');
-                    }).reverse();
-                    console.log(JSON.stringify(dates));
-                    const weights = measurements.map(x => x.weight).reverse();
-                    this.setState({
-                        measurements: weights,
-                        dates: dates,
-                    });
-                } catch (error) {
-                    console.log('Failed to retrieve measurements');
-                    console.log(error);
-                }
+                this.getMeasurements(profile);
+                console.log('User profile: ' + JSON.stringify(profile));
             } else {
                 this.getAuthorizeLink();
             }
-            console.log('User profile: ' + JSON.stringify(profile));
         });
+    }
+
+    getMeasurements(profile) {
+        try {
+            const measurements = await WithinsService.getWeightMeasurements(profile.oauth_access_token, profile.oauth_access_token_secret, profile.user_id);
+            const dates = measurements.map((x) => {
+                return DateFormat(new Date(x.date * 1000), 'dd.mm');
+            }).reverse();
+            console.log(JSON.stringify(dates));
+            const weights = measurements.map(x => x.weight).reverse();
+            this.setState({
+                measurements: weights,
+                dates: dates,
+            });
+        } catch (error) {
+            console.log('Failed to retrieve measurements');
+            console.log(error);
+            this.setState({ error: error.message});
+        }
     }
 
     async getAuthorizeLink() {
@@ -65,12 +78,6 @@ export default class blazinglean extends Component {
             console.log(error);
             this.setState({ error: error.message });
         }
-    }
-
-    handleCallback(profile) {
-        DeviceStorage.update(USER_PROFILE_TABLE_NAME, profile).then(() => {
-            console.log('User profile stored');
-        });
     }
 
     async getStoredUserProfile() {
@@ -96,7 +103,8 @@ export default class blazinglean extends Component {
                 console.log('User profile stored');
             });
 
-            this.setState(profile);
+            this.getMeasurements(profile);
+
         } catch (error) {
             console.log(error);
             this.setState({
@@ -134,9 +142,9 @@ export default class blazinglean extends Component {
         if (!this.state.auth_link) {
             return (
                 <View>
-                    <Text>
-                        {this.state.error || 'Getting the authorization link...'}
-                    </Text>
+                    <BusyIndicator
+                        text={this.state.error || 'Getting the authorization link...'}
+                     />
                 </View>
             );
         }
